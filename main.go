@@ -5,7 +5,7 @@
 // notice and this notice are preserved.  This file is offered as-is,
 // without any warranty.
 
-// Command abserve implements a minimal HTTP server that serves
+// Abserve implements a minimal HTTP server that serves
 // an ``abstract'' resource directly from memory.
 //
 // 	% echo 'Hello, world!' | abserve -l :80 &
@@ -23,7 +23,7 @@
 // must be served. If omitted, defaults to ``/''. For convenience, a starting
 // ``/'' is implicit if not present.
 //
-// The options act as follows.
+// Abserve supports the following options.
 //
 // 	-l, --listen <address>:<port>
 //
