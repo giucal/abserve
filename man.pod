@@ -7,7 +7,7 @@ B<abserve> - from-memory server (with optional assets from disk)
 B<abserve> [B<-h> | B<--version>]
 
 B<abserve>
-[-p I<fifo>] [-d I<directory>] [-l [I<address>][:I<port>]]
+[B<-p> I<fifo>] [B<-d> I<directory>] [B<-l> [I<address>][:I<port>]]
 [B<-->]
 [I<path>]
 
@@ -21,7 +21,7 @@ server will bind to the local address, port 8080.
 
 When invoked without the B<-p> option, B<abserve> will read the resource
 from standard input.  When invoked with the B<-p> option, it will run in
-poll mode.  See L<-p> for details.
+poll mode.  See L<OPTIONS/B<-p>> for details.
 
 If the B<-d> option is given, I<directory> will also be served (from disk).
 
@@ -72,7 +72,7 @@ Successful termination. Always due to an INT signal.
 
 =item Z<>2
 
-Usage error, explicit request for help (L<-h>) or
+Usage error, explicit request for help (B<-h>) or
 version reporting (B<--version>).
 
 =item >0
