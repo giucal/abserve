@@ -1,0 +1,187 @@
+=head1 NAME
+
+B<abserve> - from-memory server (with optional assets from disk)
+
+=head1 SYNOPSIS
+
+B<abserve>
+[B<-h>] [-p I<fifo>] [-d I<directory>] [-l [I<address>][:I<port>]]
+[B<-->] [I<path>]
+
+=head1 DESCRIPTION
+
+B<abserve> serves a "virtual" resource directly from memory. The resource will
+be available at http://I<address>:I<port>/I<path>.
+
+If I<path> is omitted, it defaults to C</>.  If B<-l> is not given, the
+server will bind to the local address, port 8080.
+
+When invoked without the B<-p> option, B<abserve> will read the resource
+from standard input.  When invoked with the B<-p> option, it will run in
+poll mode.  See L<-p> for details.
+
+If the B<-d> option is given, I<directory> will also be served (from disk).
+
+The server will run until an error occurs or it is interruped by an INT signal.
+
+=head1 OPTIONS
+
+=over
+
+=item B<-p>, B<--poll> I<fifo>
+
+Read the resource from I<fifo> instead of standard input and cache it
+until I<fifo> is again written to.  When this happens, read anew from
+I<fifo> and update the resource.
+
+I<fifo> must be a special FIFO file (a "named pipe").  Polling is
+accomplished by opening it for reading.  See L<mkfifo(1)>, L<mkfifo(2)>
+and L<open(2)/"O_NONBLOCK"> for details on FIFOs.
+
+=item B<-d>, B<--directory> I<directory>
+
+Serve files from I<directory> together with the the virtual resource
+I<path>.  The virtual resource will override I<directory>/I<path>,
+should it exist.
+
+=item B<-l>, B<--listen> [I<address>][:I<port>]
+
+Listen on the given I<address> and I<port>.  They default to the local
+address and C<8080> respectively.
+
+=item B<-h>, B<--help>
+
+Print a help message to standard error.
+
+=back
+
+=head1 EXIT STATUS
+
+=over
+
+=item Z<>0
+
+Successful termination. Always due to an INT signal.
+
+=item Z<>2
+
+Usage error or explicit request for help (L<-h>).
+
+=item >0
+
+Runtime errors (e.g. I/O errors), internal errors, uncaught signals, etc.
+
+=back
+
+=head1 EXAMPLES
+
+Serving an immutable resource is accomplished by piping or redirecting input:
+
+    cmd ... | abserve  # Sink-in input from another command.
+    abserve < file     # Read input from a file.
+
+The server runs in the same process as B<abserve>, which can be sent to the
+background:
+
+    % abserve < file &
+    [1] 5471
+    % jobs -l
+    [1]  + 5471  running    abserve < file
+
+It can then be terminated by bringing it back to the foreground and sending
+and interrupt with C<^C> (CTRL-C):
+
+    % fg
+    ^C
+
+or also directly by PID with L<kill(1)>:
+
+    kill -s INT 5471
+
+Serving a mutable resource is accomplished through the B<-p>/B<--poll>
+option.  In this example, the FIFO is created with the L<mkfifo(1)>
+command:
+
+    mkfifo fifo        # Create a FIFO.
+    abserve -p fifo &  # Won't serve anything until fifo is written to!
+    cat former > fifo
+
+Now, updating the resource, e.g. with the content of I<latter>, is just
+a matter of writing to the FIFO:
+
+    cat latter > fifo
+
+=head2 Practical examples
+
+The following examples solve the common problem of serving something bypassing
+the disk.
+
+=head3 Serving "live" resources
+
+Suppose we want to preview a document using an HTML converter like Markdown.
+Here's a possible command-line interaction that uses L<pandoc(1)>, L<entr(1)>,
+and L<xdg-open(1)>:
+
+    % mkfifo fifo
+    % abserve -p fifo -d . &
+    [1] 5478
+    % echo doc.md | entr pandoc doc.md -o fifo &
+    % xdg-open http://localhost:8080
+
+Note that the current directory is also served, so that
+linked assets such as images and stylesheets will render correctly.
+
+=head3 File sharing
+
+Sharing a file, e.g. a public key, on the local network is as simple as:
+
+    abserve -l :80 < id_ed25519.pub
+
+Peers can then visit http://I<hostname>.local to get the key.
+
+As a more elaborated example, here's a script for serving a growing file,
+(e.g. a log of L<ping(1)> invocations):
+
+    #!/bin/sh
+    echo 'PING LOG' > ping.log
+    mkfifo fifo || exit
+    trap 'rm -f fifo' EXIT
+
+    # Launch abserve in the background in poll mode.
+    abserve -l :80 -p fifo &
+
+    # When ping.log changes, update the resource.
+    echo ping.log | entr -s 'cat ping.log > fifo' &
+
+    # Ping 10.0.3.1 every 5 minutes for 24 hours.
+    for (( i = 0; i < 288; i++ )); do
+        sleep 300
+        printf >> ping.log '%s\n' \
+            '* * * * *' \
+            "$(date)" \
+            "$(ping -c5 10.0.3.1)"
+    done
+
+=head1 SEE ALSO
+
+=over
+
+=item L<https://github.com/giucal/abserve>
+
+B<abserve>'s repository.
+
+=item L<https://pandoc.org>
+
+Home page for L<pandoc(1)>, a utility for converting between numerous document
+formats.  (Used in the examples.)
+
+=item L<https://eradman.com/entrproject/entr.1.html>
+
+Online manual for L<entr(1)>, a utility for executing a command when some file 
+changes.  (Used in the examples.)
+
+=back
+
+=head1 AUTHORS
+
+Giuseppe Calabrese
