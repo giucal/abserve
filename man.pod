@@ -21,7 +21,7 @@ server will bind to the local address, port 8080.
 
 When invoked without the B<-p> option, B<abserve> will read the resource
 from standard input.  When invoked with the B<-p> option, it will run in
-poll mode.  See L<OPTIONS/B<-p>> for details.
+poll mode.  See L</OPTIONS> for details.
 
 If the B<-d> option is given, I<directory> will also be served (from disk).
 
