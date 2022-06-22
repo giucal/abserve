@@ -1,10 +1,3 @@
-// Copyright 2022 Giuseppe Calabrese.
-//
-// Copying and distribution of this file, with or without modification,
-// are permitted in any medium without royalty provided the copyright
-// notice and this notice are preserved.  This file is offered as-is,
-// without any warranty.
-
 // Abserve implements a minimal HTTP server that serves
 // a ``virtual'' resource directly from memory.
 //
@@ -33,6 +26,8 @@ import (
 
 	"rsc.io/getopt"
 )
+
+const version string = "0.0.1"
 
 var prog = filepath.Base(os.Args[0])
 var logger = log.New(os.Stderr, prog+": ", 0)
@@ -102,6 +97,7 @@ func synopsis() {
 // BUG(gc): Use of the flag package.
 func parseArgs() {
 	var help bool
+	var printVersion bool
 
 	flag.StringVar(&directory, "d", "",
 		"serve everything else from `<directory>`")
@@ -109,6 +105,7 @@ func parseArgs() {
 		"ignore input and cache `<fifo>` (which must be a FIFO) on loop instead")
 	flag.StringVar(&address, "l", ":8080", "listen on `<address>:<port>`")
 	flag.BoolVar(&help, "h", false, "print this")
+	flag.BoolVar(&printVersion, "version", false, "print version")
 
 	getopt.Alias("d", "directory")
 	getopt.Alias("p", "poll")
@@ -130,6 +127,11 @@ Cache and serve input (from memory) at http://<address>:<port>/[<path>].
 Options:
 `)
 		getopt.PrintDefaults()
+		os.Exit(2)
+	}
+
+	if printVersion {
+		fmt.Printf("abserve v%s\n", version)
 		os.Exit(2)
 	}
 

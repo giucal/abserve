@@ -4,9 +4,12 @@ B<abserve> - from-memory server (with optional assets from disk)
 
 =head1 SYNOPSIS
 
+B<abserve> [B<-h> | B<--version>]
+
 B<abserve>
-[B<-h>] [-p I<fifo>] [-d I<directory>] [-l [I<address>][:I<port>]]
-[B<-->] [I<path>]
+[-p I<fifo>] [-d I<directory>] [-l [I<address>][:I<port>]]
+[B<-->]
+[I<path>]
 
 =head1 DESCRIPTION
 
@@ -53,6 +56,10 @@ address and C<8080> respectively.
 
 Print a help message to standard error.
 
+=item B<--version>
+
+Print the version to standard output.
+
 =back
 
 =head1 EXIT STATUS
@@ -65,7 +72,8 @@ Successful termination. Always due to an INT signal.
 
 =item Z<>2
 
-Usage error or explicit request for help (L<-h>).
+Usage error, explicit request for help (L<-h>) or
+version reporting (B<--version>).
 
 =item >0
 
