@@ -57,7 +57,7 @@ func cache(r io.Reader) {
 }
 
 var (
-	path      string // The reource's (abstract) path.
+	path      string // The reource's (virtual) path.
 	directory string // The directory to serve from.
 	fifo      string // The FIFO to poll.
 	address   string // Address and port to bind to.
