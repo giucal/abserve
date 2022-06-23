@@ -53,4 +53,4 @@ For details, see the [man page][abserve(1)].
 
 ## Installation
 
-    go install github.com/giucal/abserve
+    go install github.com/giucal/abserve@latest
