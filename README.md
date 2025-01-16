@@ -33,23 +33,22 @@ Writing to the FIFO causes abserve to update the resource:
 It's also possible to serve *concrete* resources from a given
 directory. The virtual resource takes precedence over anything else.
 
-    % ls
-    cat.jpg   dog.jpg   index.html
-    % cat index.html                            # index.html on disk
-    <img src="dog.jpg">
-    % echo '<img src="cat.jpg">' | abserve --directory . /index.html &
-    [1] 56388
-    % curl http://localhost:8080/index.html     # virtual index.html
-    <img src="cat.jpg">
-    % curl http://localhost:8080/cat.jpg | catimg
+<pre><code>% ls
+cat.jpg   dog.jpg   index.html
+% cat index.html                            # index.html on disk
+&lt;img src="dog.jpg"&gt;
+% echo '&lt;img src="cat.jpg"&gt;' | abserve --directory . /index.html &amp;
+[1] 56388
+% curl http://localhost:8080/index.html     # virtual index.html
+&lt;img src="cat.jpg"&gt;
+% curl http://localhost:8080/cat.jpg | catimg
+<img alt="cat.jpg"
+     src="https://gist.githubusercontent.com/giucal/282bf150c6001ae1028bcd92ac3f5f5c/raw/cat.jpg"
+     title="Copyright 2006 Giuseppe Calabrese. All Rights Reserved."
+     height=100>
+</code></pre>
 
-![cat.jpg](https://gist.githubusercontent.com/giucal/282bf150c6001ae1028bcd92ac3f5f5c/raw/cat.jpg "Copyright 2006 Giuseppe Calabrese. All Rights Reserved.")
-
-* * *
-
-Enough with `cat`s.
-
-For details, see the [man page][abserve(1)].
+Enough with cats. For details, see the [man page][abserve(1)].
 
 ## Installation
 
